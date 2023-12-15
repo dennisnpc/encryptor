@@ -7,8 +7,22 @@
     <link rel="stylesheet" href="main.css">
 </head>
 <body>
-    <input type="file" accept=".txt" id="fileInput">
+    <div>
+        Select file to encrypt <br />
+        <input type="file" accept=".txt" id="fileInput">
+        <br />
+        <button id="getEncFile">Encrypt</button>
+        <button id="getEncFileKey">Key</button>
+    </div>
     <br />
-    <button id="encFile">Download</button>
+    <div>
+        Select encrypted file to decrypt <br />
+        <input type="file" accept=".enc" id="encFileInput">
+        <br />
+        Select key <br />
+        <input type="file" accept=".json" id="encFileKeyInput">
+        <br />
+        <button id="getDecFile">Decrypt</button>
+    </div>
 </body>
 </html>
