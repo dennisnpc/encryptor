@@ -1,198 +1,247 @@
-// Start once HTML elements have loaded
-document.addEventListener('DOMContentLoaded', function () {
+class File {
+    name = null;
+    contents = null;
 
-    // 'Encrypt' button reference
-    const encryptButton = document.getElementById('getEncFile');
+    open(input) {
+        return new Promise((resolve, reject) => {
+            const fileInput = document.getElementById(input);
+            const file = fileInput.files[0];
 
-    // 'Key' button reference
-    const getKeyButton = document.getElementById('getEncFileKey');
-
-    // 'Decrypt' button reference
-    const decryptButton = document.getElementById('getDecFile');
-
-    // When the button is pressed
-    encryptButton.addEventListener('click', encrypt);
-
-    decryptButton.addEventListener('click', decrypt);
-
-    getKeyButton.addEventListener('click', downloadKey);
-});
-
-let keyEnc;
-function encrypt() {
-
-    // Get input file
-    const fileInput = document.getElementById('fileInput');
-    // Check if a file was selected
-    if (fileInput.files[0] && fileInput.files[0].type === 'text/plain') {
-
-        const file = fileInput.files[0];
-        const reader = new FileReader();
-        let modifiedContents = '';
-        keyEnc = randomNumber();
-
-        // Read the file
-        reader.onload = function (event) {
-            const contents = event.target.result;
-
-            // Encryption algorithm
-            for (let i = 0; i < contents.length; i++) {
-                let shift = Number(keyEnc[(contents.length + i) % keyEnc.length]);
-                let currentCharCode = contents.charCodeAt(i);
-                currentCharCode = currentCharCode + shift;
-                modifiedContents += String.fromCharCode(currentCharCode);
+            if (!file) {
+                reject(new Error('No file selected'));
+                return;
             }
 
-            // Output results to console
-            console.log('Original:', contents);
-            console.log('Encrypted:', modifiedContents);
-            console.log('Key:', keyEnc);
+            this.name = file.name;
 
-            // Download encrypted file
-            downloadFile(modifiedContents, file.name, '.enc', 'text/plain');
-        };
-
-        // Read file as text
-        reader.readAsText(file);
-    }
-
-    // If no file selected
-    else if (!(fileInput.files[0])) {
-        console.log('No file selected');
-    }
-    // If incorrect file type selected
-    else if (!(fileInput.files[0].type === 'text/plain')) {
-        console.log('Incorrect file type');
-    }
-}
-
-function downloadKey() {
-
-    if (keyEnc != null) {
-        let encFileMetadata = {
-            key: keyEnc
-        };
-
-        let jsonFile = JSON.stringify(encFileMetadata);
-        downloadFile(jsonFile, 'key', '.json', 'application/json')
-    }
-
-    // If no file has been encrypted
-    else {
-        console.log('No has been generated');
-    }
-}
-
-function decrypt() {
-
-    // Get encrypted file input
-    const fileInput = document.getElementById('encFileInput');
-
-    // Check if a file was selected
-    if (fileInput.files[0]) {
-
-        const encFile = fileInput.files[0];
-        const keyInput = document.getElementById('encFileKeyInput');
-
-        // Get key input
-        if (keyInput.files[0] && keyInput.files[0].type === 'application/json') {
-            const keyFile = keyInput.files[0];
             const reader = new FileReader();
 
-            reader.onload = function (event) {
-                const jsonContent = event.target.result;
-                const parsedJson = JSON.parse(jsonContent);
-
-                if (parsedJson && parsedJson.key) {
-                    console.log('Key from JSON:', parsedJson.key);
-
-                    const reader = new FileReader();
-                    let modifiedContents = '';
-                    let keyDec = parsedJson.key;
-
-                    // Read the key
-                    reader.onload = function (event) {
-                        const contents = event.target.result;
-
-                        // Decryption algorithm
-                        for (let i = 0; i < contents.length; i++) {
-                            let shift = Number(keyDec[(contents.length + i) % keyDec.length]);
-                            let currentCharCode = contents.charCodeAt(i);
-                            currentCharCode = currentCharCode - shift;
-                            modifiedContents += String.fromCharCode(currentCharCode);
-                        }
-
-                        // Output decrypted file
-                        downloadFile(modifiedContents, encFile.name, '');
-                    };
-
-                    reader.readAsText(encFile);
-                }
-                else {
-                    console.log('Invalid JSON format or key not found');
-                }
+            reader.onload = (event) => {
+                this.contents = event.target.result;
+                resolve(this.contents);
             };
 
-            reader.readAsText(keyFile);
+            reader.onerror = (error) => {
+                console.error('Error reading file:', error);
+                reject(error);
+            };
+
+            reader.readAsText(file);
+        });
+    }
+
+    download() {
+        // Create a Blob containing the file content
+        const blob = new Blob([this.contents], { type: 'text/plain' });
+
+        // Create a link element
+        const aTag = document.createElement('a');
+        aTag.href = URL.createObjectURL(blob);
+
+        // Set the file name
+        let downloadName = this.name;
+        if (downloadName.includes('.enc')) {
+            downloadName = downloadName.replace('.enc', '');
+        }
+        else {
+            downloadName += '.enc';
+        }
+
+        aTag.download = downloadName;
+
+        // Append the anchor element to the body
+        document.body.appendChild(aTag);
+
+        // Programmatically trigger a click event on the anchor element
+        aTag.click();
+
+        // Remove the anchor element from the body
+        document.body.removeChild(aTag);
+    }
+}
+
+class Encryptor {
+    key = this.randomNumber();
+
+    encrypt(fileObject) {
+        let cyphertext = '';
+
+        // Check if a file was selected
+        if (fileObject.contents != null) {
+
+            const plaintext = fileObject.contents;
+
+            // Encryption algorithm
+            for (let i = 0; i < plaintext.length; i++) {
+                let shift = Number(this.key[(plaintext.length + i) % this.key.length]);
+                let currentCharCode = plaintext.charCodeAt(i);
+                currentCharCode = currentCharCode + shift;
+                cyphertext += String.fromCharCode(currentCharCode);
+            }
+
+            fileObject.contents = cyphertext;
+
+            // Output results to console
+            console.log('Encrypted:', fileObject.contents);
+            console.log('Key:', this.key);
         }
 
         // If no file selected
-        else if (!(keyInput.files[0])) {
-            console.log('No key selected');
-        }
-        // If incorrect file type selected
-        else if (!(keyInput.files[0].type === 'application/json')) {
-            console.log('Incorrect key file type');
+        else {
+            console.log('No file selected');
         }
     }
 
-    // If no file selected
-    else {
-        console.log('No file selected');
+    randomNumber() {
+        let number = '';
+
+        for (let i = 0; i < (Math.floor((Math.random() * 96) + 32)); i++) {
+            let newDigit;
+            do {
+                newDigit = (Math.floor((Math.random() * 9) + 1)).toString();
+            } while (i > 0 && newDigit === number[i - 1]);
+
+            number += newDigit;
+        }
+
+        return number;
     }
 }
 
-function downloadFile(file, originalName, extension, type) {
+class Decryptor {
+    key = null;
 
-    // Create a Blob containing the file content
-    const blob = new Blob([file], { type: type });
+    decrypt(fileObject) {
+        let plaintext = '';
 
-    // Create a link element
-    const aTag = document.createElement('a');
-    aTag.href = URL.createObjectURL(blob);
+        // Check if a file was selected
+        if (fileObject.contents != null) {
 
-    // Set the file name
-    let downloadName = originalName.toString();
-    if (downloadName.includes('.enc')) {
-        downloadName = downloadName.replace('.enc', '');
-    }
-    else {
-        downloadName += extension;
-    }
-    aTag.download = downloadName;
+            const cyphertext = fileObject.contents;
 
-    // Append the anchor element to the body
-    document.body.appendChild(aTag);
+            // Decryption algorithm
+            for (let i = 0; i < cyphertext.length; i++) {
+                let shift = Number(this.key[(cyphertext.length + i) % this.key.length]);
+                let currentCharCode = cyphertext.charCodeAt(i);
+                currentCharCode = currentCharCode - shift;
+                plaintext += String.fromCharCode(currentCharCode);
+            }
 
-    // Programmatically trigger a click event on the anchor element
-    aTag.click();
+            fileObject.contents = plaintext;
 
-    // Remove the anchor element from the body
-    document.body.removeChild(aTag);
+            // Output results to console
+            console.log('Decrypted:', fileObject.contents);
+            console.log('Key:', this.key);
+        }
+
+        // If no file selected
+        else {
+            console.log('No file selected');
+        }
+    }    
 }
 
-function randomNumber() {
+class JsonHandler {
+    async open(encryptorObject) {
+        try {
+            const json = new File();
+            await json.open('encFileKeyInput');
 
-    let number = '';
+            const parsedJson = JSON.parse(json.contents);
 
-    for (let i = 0; i < (Math.floor((Math.random() * 96) + 32)); i++) {
-        let newDigit;
-        do {
-            newDigit = (Math.floor((Math.random() * 9) + 1)).toString();
-        } while (i > 0 && newDigit === number[i - 1]);
-
-        number += newDigit;
+            if (parsedJson && parsedJson.key) {
+                console.log('Key from JSON:', parsedJson.key);
+                encryptorObject.key = parsedJson.key;
+            } else {
+                console.log('Invalid JSON format or key not found');
+            }
+        } catch (error) {
+            console.error('Error reading file:', error);
+        }
     }
 
-    return number;
+    download(key) {
+        if (key != null) {
+            let encFileMetadata = {
+                key: key
+            };
+
+            let jsonFile = JSON.stringify(encFileMetadata);
+
+            // Create a Blob containing the file content
+            const blob = new Blob([jsonFile], { type: 'application/json' });
+
+            // Create a link element
+            const aTag = document.createElement('a');
+            aTag.href = URL.createObjectURL(blob);
+
+            // Set the file name
+            let downloadName = 'key.json';
+
+            aTag.download = downloadName;
+
+            // Append the anchor element to the body
+            document.body.appendChild(aTag);
+
+            // Programmatically trigger a click event on the anchor element
+            aTag.click();
+
+            // Remove the anchor element from the body
+            document.body.removeChild(aTag);
+        }
+
+        // If no file has been encrypted
+        else {
+            console.log('No key has been generated');
+        }
+    }
 }
+
+
+// 'Encrypt' button
+const encryptButton = document.getElementById('getEncFile');
+encryptButton.addEventListener('click', async function () {
+    const myFile = new File();
+
+    try {
+        await myFile.open('fileInput')
+        console.log(myFile.contents);
+
+        encryptor = new Encryptor();
+        encryptor.encrypt(myFile);
+
+        myFile.download();
+
+        console.log('File encrypted and downloaded successfully');
+    } catch (error) {
+        console.error('Error encrypting and downloading:', error);
+    }
+});
+
+// 'Key' button
+const getKeyButton = document.getElementById('getEncFileKey');
+getKeyButton.addEventListener('click', function () {
+    keyJson = new JsonHandler();
+    keyJson.download(encryptor.key);
+});
+
+// 'Decrypt' button
+const decryptButton = document.getElementById('getDecFile');
+decryptButton.addEventListener('click', async function () {
+    const myFile = new File();
+
+    try {
+        await myFile.open('encFileInput');
+        console.log(myFile.contents);
+
+        decryptor = new Decryptor();
+        jsonHandler = new JsonHandler();
+        await jsonHandler.open(decryptor);
+        decryptor.decrypt(myFile);
+
+        myFile.download();
+    }
+    catch (error) {
+        console.error('Error decrypting and downloading:', error);
+    }
+});
