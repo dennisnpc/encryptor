@@ -2,9 +2,13 @@ class File {
     name = null;
     contents = null;
 
-    open(input) {
+    encryptor = new Encryptor();
+    decryptor = new Decryptor();
+    JSONHandler = new JSONHandler();
+
+    open(HTMLId) {
         return new Promise((resolve, reject) => {
-            const fileInput = document.getElementById(input);
+            const fileInput = document.getElementById(HTMLId);
             const file = fileInput.files[0];
 
             if (!file) {
@@ -30,7 +34,28 @@ class File {
         });
     }
 
-    download() {
+    encryptFile() {
+        this.contents = this.encryptor.encrypt(this.contents);
+    }
+
+    downloadKey() {
+        this.JSONHandler.downloadKey(fileToEncrypt.encryptor.key);
+    }
+
+    async loadKey() {
+        try {
+            this.decryptor.key = await this.JSONHandler.readKey();
+            console.log('Key loaded:', this.decryptor.key);
+        } catch (error) {
+            console.error('Error loading key:', error);
+        }
+    }
+
+    decryptFile() {
+        this.contents = this.decryptor.decrypt(this.contents);
+    }
+
+    downloadFile() {
         // Create a Blob containing the file content
         const blob = new Blob([this.contents], { type: 'text/plain' });
 
@@ -40,7 +65,7 @@ class File {
 
         // Set the file name
         let downloadName = this.name;
-        if (downloadName.includes('.enc')) {
+        if (downloadName.endsWith('.enc')) {
             downloadName = downloadName.replace('.enc', '');
         }
         else {
@@ -63,13 +88,13 @@ class File {
 class Encryptor {
     key = this.randomNumber();
 
-    encrypt(fileObject) {
+    encrypt(data) {
         let cyphertext = '';
 
         // Check if a file was selected
-        if (fileObject.contents != null) {
+        if (data != null) {
 
-            const plaintext = fileObject.contents;
+            const plaintext = data;
 
             // Encryption algorithm
             for (let i = 0; i < plaintext.length; i++) {
@@ -79,11 +104,11 @@ class Encryptor {
                 cyphertext += String.fromCharCode(currentCharCode);
             }
 
-            fileObject.contents = cyphertext;
-
             // Output results to console
-            console.log('Encrypted:', fileObject.contents);
+            console.log('Encrypted:', cyphertext);
             console.log('Key:', this.key);
+
+            return cyphertext;
         }
 
         // If no file selected
@@ -111,13 +136,13 @@ class Encryptor {
 class Decryptor {
     key = null;
 
-    decrypt(fileObject) {
+    decrypt(data) {
         let plaintext = '';
 
         // Check if a file was selected
-        if (fileObject.contents != null) {
+        if (data != null) {
 
-            const cyphertext = fileObject.contents;
+            const cyphertext = data;
 
             // Decryption algorithm
             for (let i = 0; i < cyphertext.length; i++) {
@@ -127,11 +152,11 @@ class Decryptor {
                 plaintext += String.fromCharCode(currentCharCode);
             }
 
-            fileObject.contents = plaintext;
-
             // Output results to console
-            console.log('Decrypted:', fileObject.contents);
+            console.log('Decrypted:', plaintext);
             console.log('Key:', this.key);
+
+            return plaintext;
         }
 
         // If no file selected
@@ -141,8 +166,8 @@ class Decryptor {
     }    
 }
 
-class JsonHandler {
-    async open(encryptorObject) {
+class JSONHandler {
+    async readKey() {
         try {
             const json = new File();
             await json.open('encFileKeyInput');
@@ -151,7 +176,7 @@ class JsonHandler {
 
             if (parsedJson && parsedJson.key) {
                 console.log('Key from JSON:', parsedJson.key);
-                encryptorObject.key = parsedJson.key;
+                return parsedJson.key;
             } else {
                 console.log('Invalid JSON format or key not found');
             }
@@ -160,7 +185,7 @@ class JsonHandler {
         }
     }
 
-    download(key) {
+    downloadKey(key) {
         if (key != null) {
             let encFileMetadata = {
                 key: key
@@ -201,16 +226,15 @@ class JsonHandler {
 // 'Encrypt' button
 const encryptButton = document.getElementById('getEncFile');
 encryptButton.addEventListener('click', async function () {
-    const myFile = new File();
+    fileToEncrypt = new File();
 
     try {
-        await myFile.open('fileInput')
-        console.log(myFile.contents);
+        await fileToEncrypt.open('fileInput')
+        console.log(fileToEncrypt.contents);
 
-        encryptor = new Encryptor();
-        encryptor.encrypt(myFile);
+        fileToEncrypt.encryptFile();
 
-        myFile.download();
+        fileToEncrypt.downloadFile();
 
         console.log('File encrypted and downloaded successfully');
     } catch (error) {
@@ -221,25 +245,22 @@ encryptButton.addEventListener('click', async function () {
 // 'Key' button
 const getKeyButton = document.getElementById('getEncFileKey');
 getKeyButton.addEventListener('click', function () {
-    keyJson = new JsonHandler();
-    keyJson.download(encryptor.key);
+    fileToEncrypt.downloadKey();
 });
 
 // 'Decrypt' button
 const decryptButton = document.getElementById('getDecFile');
 decryptButton.addEventListener('click', async function () {
-    const myFile = new File();
+    const fileToDecrypt = new File();
 
     try {
-        await myFile.open('encFileInput');
-        console.log(myFile.contents);
+        await fileToDecrypt.open('encFileInput');
+        console.log(fileToDecrypt.contents);
 
-        decryptor = new Decryptor();
-        jsonHandler = new JsonHandler();
-        await jsonHandler.open(decryptor);
-        decryptor.decrypt(myFile);
+        await fileToDecrypt.loadKey();
+        fileToDecrypt.decryptFile();
 
-        myFile.download();
+        fileToDecrypt.downloadFile();
     }
     catch (error) {
         console.error('Error decrypting and downloading:', error);
