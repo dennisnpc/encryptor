@@ -3,26 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encrypt/Decrypt Application</title>
     <link defer rel="stylesheet" href="main.css">
     <script defer src="app.js"></script>
 </head>
 <body>
-    <div>
-        Select file to encrypt <br />
-        <input type="file" accept=".txt" id="fileInput">
-        <br />
-        <button id="getEncFile">Encrypt</button>
-        <button id="getEncFileKey">Key</button>
-    </div>
-    <br />
-    <div>
-        Select encrypted file to decrypt <br />
-        <input type="file" accept=".enc" id="encFileInput">
-        <br />
-        Select key <br />
-        <input type="file" accept=".json" id="encFileKeyInput">
-        <br />
-        <button id="getDecFile">Decrypt</button>
+    <div class="container">
+        <div class="split" id="selectors">
+            <button id="encSelect" class="button">Encrypt <img src="icons\lock_locked.png" /></button>
+            <button id="decSelect" class="button">Decrypt <img src="icons\lock_unlocked.png" /></button>
+        </div>
+
+        <div id="encScreen1">
+            <button id="encGetFile" class="button tall"><img src="icons\file_dec.png" /><br />Drop or select .txt</button>
+            <input type="file" accept=".txt" id="encFile" hidden>
+        </div>
+
+        <div id="encProcess">
+            <button class="button hover highlight">Process</button>
+        </div>
+
+        <div class="split" id="encScreen2">
+            <button id="encDownloadFile" class="button tall"><img src="icons\file_enc.png" /><br />Download file</button>
+            <button id="encDownloadKey" class="button tall"><img src="icons\key.png" /><br />Download key</button>
+        </div>
+
+        <div id="decScreen1">
+            <div class="split">
+                <button id="decGetFile" class="button tall"><img src="icons\file_enc.png"/><br />Drop or select .enc</button>
+                <input type="file" accept=".enc" id="decFile" hidden>
+                <button id="decGetKey" class="button tall"><img src="icons\key.png" /><br />Drop or select .json</button>
+                <input type="file" accept=".json" id="decKey" hidden>
+            </div>
+        </div>
+
+        <div id="decProcess">
+            <button class="button hover highlight">Process</button>
+        </div>
+
+        <div id="decScreen2">
+            <button class="button tall" id="decDownloadFile"><img src="icons\file_dec.png" /><br />Download file</button>
+        </div>
+
+        <div class="center" id="processing-screen">
+            Processing...
+        </div>
+
+        <div id="restart">
+            <button class="button hover highlight">Restart</button>
+        </div>
     </div>
 </body>
 </html>
