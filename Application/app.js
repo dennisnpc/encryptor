@@ -1,4 +1,4 @@
-class File {
+﻿class File {
         name = null;
         contents = null;
 
@@ -533,5 +533,106 @@ class JSONHandler {
     }
 }
 
+
+// Change language
+{
+    document.getElementById('language').addEventListener('change', function () {
+        // English
+        if (language.value === 'en') {
+            document.querySelector('#encSelect span').innerText = 'Encrypt';
+            document.querySelector('#decSelect span').innerText = 'Decrypt';
+            document.querySelector('#encGetFile span').innerText = 'Drop or select .txt';
+            document.querySelector('#encProcess span').innerText = 'Process';
+            document.querySelector('#encDownloadFile span').innerText = 'Download file';
+            document.querySelector('#encDownloadKey span').innerText = 'Download key';
+            document.querySelector('#decGetFile span').innerText = 'Drop or select .enc';
+            document.querySelector('#decGetKey span').innerText = 'Drop or select .json';
+            document.querySelector('#decProcess span').innerText = 'Process';
+            document.querySelector('#decDownloadFile span').innerText = 'Download file';
+            document.querySelector('#processing-screen span').innerText = 'Processing...';
+            document.querySelector('#restart span').innerText = 'Restart';
+        }
+
+        // Chinese (Simplified)
+        if (language.value === 'ch') {
+            document.querySelector('#encSelect span').innerText = '加密';
+            document.querySelector('#decSelect span').innerText = '解密';
+            document.querySelector('#encGetFile span').innerText = '拖放或选择 .txt';
+            document.querySelector('#encProcess span').innerText = '处理';
+            document.querySelector('#encDownloadFile span').innerText = '下载文件';
+            document.querySelector('#encDownloadKey span').innerText = '下载密钥';
+            document.querySelector('#decGetFile span').innerText = '拖放或选择 .enc';
+            document.querySelector('#decGetKey span').innerText = '拖放或选择 .json';
+            document.querySelector('#decProcess span').innerText = '处理';
+            document.querySelector('#decDownloadFile span').innerText = '下载文件';
+            document.querySelector('#processing-screen span').innerText = '处理中...';
+            document.querySelector('#restart span').innerText = '重新开始';
+        }
+
+        // Hindi
+        if (language.value === 'hi') {
+            document.querySelector('#encSelect span').innerText = 'एन्क्रिप्ट';
+            document.querySelector('#decSelect span').innerText = 'डिक्रिप्ट';
+            document.querySelector('#encGetFile span').innerText = '.txt फ़ाइल ड्रॉप करें या चयन करें';
+            document.querySelector('#encProcess span').innerText = 'प्रक्रिया';
+            document.querySelector('#encDownloadFile span').innerText = 'फ़ाइल डाउनलोड करें';
+            document.querySelector('#encDownloadKey span').innerText = 'कुंजी डाउनलोड करें';
+            document.querySelector('#decGetFile span').innerText = '.enc फ़ाइल ड्रॉप करें या चयन करें';
+            document.querySelector('#decGetKey span').innerText = '.json फ़ाइल ड्रॉप करें या चयन करें';
+            document.querySelector('#decProcess span').innerText = 'प्रक्रिया';
+            document.querySelector('#decDownloadFile span').innerText = 'फ़ाइल डाउनलोड करें';
+            document.querySelector('#processing-screen span').innerText = 'प्रस्सेसिंग...';
+            document.querySelector('#restart span').innerText = 'पुनः आरंभ करें';
+        }
+
+        // Spanish
+        if (language.value === 'sp') {
+            document.querySelector('#encSelect span').innerText = 'Encriptar';
+            document.querySelector('#decSelect span').innerText = 'Desencriptar';
+            document.querySelector('#encGetFile span').innerText = 'Arrastra o selecciona .txt';
+            document.querySelector('#encProcess span').innerText = 'Procesar';
+            document.querySelector('#encDownloadFile span').innerText = 'Descargar archivo';
+            document.querySelector('#encDownloadKey span').innerText = 'Descargar clave';
+            document.querySelector('#decGetFile span').innerText = 'Arrastra o selecciona .enc';
+            document.querySelector('#decGetKey span').innerText = 'Arrastra o selecciona .json';
+            document.querySelector('#decProcess span').innerText = 'Procesar';
+            document.querySelector('#decDownloadFile span').innerText = 'Descargar archivo';
+            document.querySelector('#processing-screen span').innerText = 'Procesando...';
+            document.querySelector('#restart span').innerText = 'Reiniciar';
+        }
+
+        // French
+        if (language.value === 'fr') {
+            document.querySelector('#encSelect span').innerText = 'Crypter';
+            document.querySelector('#decSelect span').innerText = 'Décrypter';
+            document.querySelector('#encGetFile span').innerText = 'Déposer ou sélectionner .txt';
+            document.querySelector('#encProcess span').innerText = 'Traiter';
+            document.querySelector('#encDownloadFile span').innerText = 'Télécharger le fichier';
+            document.querySelector('#encDownloadKey span').innerText = 'Télécharger la clé';
+            document.querySelector('#decGetFile span').innerText = 'Déposer ou sélectionner .enc';
+            document.querySelector('#decGetKey span').innerText = 'Déposer ou sélectionner .json';
+            document.querySelector('#decProcess span').innerText = 'Traiter';
+            document.querySelector('#decDownloadFile span').innerText = 'Télécharger le fichier';
+            document.querySelector('#processing-screen span').innerText = 'En cours de traitement...';
+            document.querySelector('#restart span').innerText = 'Redémarrage';
+        }
+
+        // Romanian
+        if (language.value === 'ro') {
+            document.querySelector('#encSelect span').innerText = 'Criptează';
+            document.querySelector('#decSelect span').innerText = 'Decriptă';
+            document.querySelector('#encGetFile span').innerText = 'Trage sau selectează .txt';
+            document.querySelector('#encProcess span').innerText = 'Procesează';
+            document.querySelector('#encDownloadFile span').innerText = 'Descarcă fișierul';
+            document.querySelector('#encDownloadKey span').innerText = 'Descarcă cheia';
+            document.querySelector('#decGetFile span').innerText = 'Trage sau selectează .enc';
+            document.querySelector('#decGetKey span').innerText = 'Trage sau selectează .json';
+            document.querySelector('#decProcess span').innerText = 'Procesează';
+            document.querySelector('#decDownloadFile span').innerText = 'Descarcă fișierul';
+            document.querySelector('#processing-screen span').innerText = 'Se procesează...';
+            document.querySelector('#restart span').innerText = 'Resetează';
+        }
+    });
+}
 
 start();

@@ -3,54 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Encrypt/Decrypt Application</title>
+    <title>Encrypt/Decrypt</title>
+    <link rel="icon" href="icons/key.png">
     <link defer rel="stylesheet" href="main.css">
     <script defer src="app.js"></script>
 </head>
 <body>
     <div class="container">
-        <div class="split" id="selectors">
-            <button id="encSelect" class="button">Encrypt <img src="icons\lock_locked.png" /></button>
-            <button id="decSelect" class="button">Decrypt <img src="icons\lock_unlocked.png" /></button>
+        <div class="split-in-2" id="selectors">
+            <button id="encSelect" class="button"><span>Encrypt</span> <img src="icons\lock_locked.png" /></button>
+            <button id="decSelect" class="button"><span>Decrypt</span> <img src="icons\lock_unlocked.png" /></button>
         </div>
 
         <div id="encScreen1">
-            <button id="encGetFile" class="button tall"><img src="icons\file_dec.png" /><br />Drop or select .txt</button>
+            <button id="encGetFile" class="button tall"><img src="icons\file_dec.png" /><br /><span>Drop or select .txt</span></button>
             <input type="file" accept=".txt" id="encFile" hidden>
         </div>
 
         <div id="encProcess">
-            <button class="button hover highlight">Process</button>
+            <button class="button highlight-on-hover highlight"><span>Process</span></button>
         </div>
 
-        <div class="split" id="encScreen2">
-            <button id="encDownloadFile" class="button tall"><img src="icons\file_enc.png" /><br />Download file</button>
-            <button id="encDownloadKey" class="button tall"><img src="icons\key.png" /><br />Download key</button>
+        <div class="split-in-2" id="encScreen2">
+            <button id="encDownloadFile" class="button tall"><img src="icons\file_enc.png" /><br /><span>Download file</span></button>
+            <button id="encDownloadKey" class="button tall"><img src="icons\key.png" /><br /><span>Download key</span></button>
         </div>
 
         <div id="decScreen1">
-            <div class="split">
-                <button id="decGetFile" class="button tall"><img src="icons\file_enc.png"/><br />Drop or select .enc</button>
+            <div class="split-in-2">
+                <button id="decGetFile" class="button tall"><img src="icons\file_enc.png"/><br /><span>Drop or select .enc</span></button>
                 <input type="file" accept=".enc" id="decFile" hidden>
-                <button id="decGetKey" class="button tall"><img src="icons\key.png" /><br />Drop or select .json</button>
+                <button id="decGetKey" class="button tall"><img src="icons\key.png" /><br /><span>Drop or select .json</span></button>
                 <input type="file" accept=".json" id="decKey" hidden>
             </div>
         </div>
 
         <div id="decProcess">
-            <button class="button hover highlight">Process</button>
+            <button class="button highlight-on-hover highlight"><span>Process</span></button>
         </div>
 
         <div id="decScreen2">
-            <button class="button tall" id="decDownloadFile"><img src="icons\file_dec.png" /><br />Download file</button>
+            <button class="button tall" id="decDownloadFile"><img src="icons\file_dec.png" /><br /><span>Download file</span></button>
         </div>
 
         <div class="center" id="processing-screen">
-            Processing...
+            <span>Processing...</span>
         </div>
 
         <div id="restart">
-            <button class="button hover highlight">Restart</button>
+            <button class="button highlight-on-hover highlight"><span>Restart</span></button>
+        </div>
+
+        <div class="split-in-3">
+            <button class="button-no-border"><img src="icons/faq.png" /></button>
+
+            <select class="button-no-border select-language" id="language">
+                <option value="en">English</option>
+                <option value="ch">简体中文</option>
+                <option value="hi">Hindi</option>
+                <option value="sp">Español</option>
+                <option value="fr">Français</option>
+                <option value="ro">Română</option>
+            </select>
+
+            <select class="button-no-border select-theme">
+                <option>Light</option>
+                <option>Dark</option>
+            </select>
         </div>
     </div>
 </body>
