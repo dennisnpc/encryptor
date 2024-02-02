@@ -635,4 +635,28 @@ class JSONHandler {
     });
 }
 
+// Change theme
+{
+    document.getElementById('theme').addEventListener('change', function () {
+        // Light
+        if (theme.value === 'light') {
+            document.documentElement.style.setProperty('--main-color', '#102C57');
+            document.documentElement.style.setProperty('--main-background', '#F8F0E5');
+            document.documentElement.style.setProperty('--box-shadow', '#3C3B47');
+            document.documentElement.style.setProperty('--highlight', '#F6FAD9');
+            document.documentElement.style.setProperty('--highlight-on-hover', '#FBFFC4');
+
+        }
+
+        // Dark
+        if (theme.value === 'dark') {
+            document.documentElement.style.setProperty('--main-color', '#E0E2DB');
+            document.documentElement.style.setProperty('--main-background', '#022B3A');
+            document.documentElement.style.setProperty('--box-shadow', '#B9BDAD');
+            document.documentElement.style.setProperty('--highlight', '#023345');
+            document.documentElement.style.setProperty('--highlight-on-hover', '#35485F');
+        }
+    });
+}
+
 start();

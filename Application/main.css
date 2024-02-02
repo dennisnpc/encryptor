@@ -1,9 +1,17 @@
+:root {
+    --main-color: #102C57;
+    --main-background: #F8F0E5;
+    --box-shadow: #3C3B47;
+    --highlight: #F6FAD9;
+    --highlight-on-hover: #FBFFC4;
+}
+
 * {
     font-family: Arial;
     font-size: 15px;
-    color: #102C57;
+    color: var(--main-color);
     text-decoration: none;
-    background: #F8F0E5;
+    background: var(--main-background);
 }
 
 .container {
@@ -19,7 +27,7 @@
 }
 
 .button {
-    box-shadow: 0px 0px 2px #3C3B47;
+    box-shadow: 0px 0px 2px var(--box-shadow);
     border: none;
     padding: 7px 9px 7px 9px;
     width: 100%;
@@ -56,7 +64,7 @@ select {
 }
 
 .highlight-on-hover:hover, .highlight-on-hover:hover span{
-    background: #FBFFC4;
+    background: var(--highlight-on-hover);
     text-decoration: none;
 }
 
@@ -65,7 +73,7 @@ select {
 }
 
 .highlight, .highlight span {
-    background: #F6FAD9;
+    background: var(--highlight);
 }
 
 .split-in-2 {
