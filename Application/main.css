@@ -52,11 +52,11 @@ select {
 }
 
 .select-language {
-    background-image: url(icons/language.png);
+    background-image: url(icons/light/language.png);
 }
 
 .select-theme {
-    background-image: url(icons/theme.png);
+    background-image: url(icons/light/theme.png);
 }
 
 .button:hover, .button-no-border:hover {
@@ -72,7 +72,7 @@ select {
     width: 2ex;
 }
 
-.highlight, .highlight span {
+.highlight, .highlight span, .highlight img {
     background: var(--highlight);
 }
 

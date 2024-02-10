@@ -11,39 +11,39 @@
 <body>
     <div class="container">
         <div class="split-in-2" id="selectors">
-            <button id="encSelect" class="button"><span>Encrypt</span> <img src="icons\lock_locked.png" /></button>
-            <button id="decSelect" class="button"><span>Decrypt</span> <img src="icons\lock_unlocked.png" /></button>
+            <button id="encSelect" class="button"><span>Encrypt</span> <img src="icons\light\lock_locked.png" /></button>
+            <button id="decSelect" class="button"><span>Decrypt</span> <img src="icons\light\lock_unlocked.png" /></button>
         </div>
 
         <div id="encScreen1">
-            <button id="encGetFile" class="button tall"><img src="icons\file_dec.png" /><br /><span>Drop or select .txt</span></button>
+            <button id="encGetFile" class="button tall"><img src="icons\light\file_dec.png" /><br /><span>Drop or select .txt</span></button>
             <input type="file" accept=".txt" id="encFile" hidden>
         </div>
 
         <div id="encProcess">
-            <button class="button highlight-on-hover highlight"><span>Process</span></button>
+            <button class="button highlight-on-hover" id="encProcess2"><span>Process</span></button>
         </div>
 
         <div class="split-in-2" id="encScreen2">
-            <button id="encDownloadFile" class="button tall"><img src="icons\file_enc.png" /><br /><span>Download file</span></button>
-            <button id="encDownloadKey" class="button tall"><img src="icons\key.png" /><br /><span>Download key</span></button>
+            <button id="encDownloadFile" class="button tall"><img src="icons\light\file_enc.png" /><br /><span>Download file</span></button>
+            <button id="encDownloadKey" class="button tall"><img src="icons\light\key.png" /><br /><span>Download key</span></button>
         </div>
 
         <div id="decScreen1">
             <div class="split-in-2">
-                <button id="decGetFile" class="button tall"><img src="icons\file_enc.png"/><br /><span>Drop or select .enc</span></button>
+                <button id="decGetFile" class="button tall"><img src="icons\light\file_enc.png"/><br /><span>Drop or select .enc</span></button>
                 <input type="file" accept=".enc" id="decFile" hidden>
-                <button id="decGetKey" class="button tall"><img src="icons\key.png" /><br /><span>Drop or select .json</span></button>
+                <button id="decGetKey" class="button tall"><img src="icons\light\key.png" /><br /><span>Drop or select .json</span></button>
                 <input type="file" accept=".json" id="decKey" hidden>
             </div>
         </div>
 
         <div id="decProcess">
-            <button class="button highlight-on-hover highlight"><span>Process</span></button>
+            <button class="button highlight-on-hover" id="decProcess2"><span>Process</span></button>
         </div>
 
         <div id="decScreen2">
-            <button class="button tall" id="decDownloadFile"><img src="icons\file_dec.png" /><br /><span>Download file</span></button>
+            <button class="button tall" id="decDownloadFile"><img src="icons\light\file_dec.png" /><br /><span>Download file</span></button>
         </div>
 
         <div class="center" id="processing-screen">
@@ -55,7 +55,7 @@
         </div>
 
         <div class="split-in-3">
-            <button class="button-no-border"><img src="icons/faq.png" /></button>
+            <button class="button-no-border" id="faq"><img src="icons\light\faq.png" /></button>
 
             <select class="button-no-border select-language" id="language">
                 <option value="en">English</option>

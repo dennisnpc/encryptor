@@ -233,8 +233,10 @@ class JSONHandler {
         document.getElementById('encFile').addEventListener('input', function () {
             if (this.files.length > 0) {
                 document.getElementById('encGetFile').innerText = this.files[0].name;
+                document.getElementById('encProcess2').classList.add('highlight');
             } else {
                 document.getElementById('encGetFile').innerText = 'Drop or select .txt';
+                document.getElementById('encProcess2').classList.remove('highlight');
             }
         });
 
@@ -244,8 +246,12 @@ class JSONHandler {
         document.getElementById('decFile').addEventListener('input', function () {
             if (this.files.length > 0) {
                 document.getElementById('decGetFile').innerText = this.files[0].name;
+                if (document.getElementById('decKey').files.length) {
+                    document.getElementById('decProcess2').classList.add('highlight');
+                }
             } else {
                 document.getElementById('decGetFile').innerText = 'Drop or select .enc';
+                document.getElementById('decProcess2').classList.remove('highlight');
             }
         });
 
@@ -255,8 +261,12 @@ class JSONHandler {
         document.getElementById('decKey').addEventListener('input', function () {
             if (this.files.length > 0) {
                 document.getElementById('decGetKey').innerText = this.files[0].name;
+                if (document.getElementById('decFile').files.length) {
+                    document.getElementById('decProcess2').classList.add('highlight');
+                }
             } else {
                 document.getElementById('decGetKey').innerText = 'Drop or select .json';
+                document.getElementById('decProcess2').classList.remove('highlight');
             }
         });
     }
@@ -268,30 +278,19 @@ class JSONHandler {
         {
             document.getElementById('encGetFile').addEventListener('dragover', function (event) {
                 event.preventDefault();
-                event.target.classList.add('drag-over');
-            });
-
-            document.getElementById('encGetFile').addEventListener('dragleave', function (event) {
-                event.target.classList.remove('drag-over');
             });
 
             document.getElementById('encGetFile').addEventListener('drop', function (event) {
                 event.preventDefault();
-                event.target.classList.remove('drag-over');
 
                 if (event.dataTransfer.files.length > 0) {
                     document.getElementById('encFile').files = event.dataTransfer.files;
-                    handleEncFileChange(document.getElementById('encFile').files[0]);
+                    document.getElementById('encGetFile').innerText = document.getElementById('encFile').files[0].name;
+                    document.getElementById('encProcess2').classList.add('highlight');
+
+                    console.log('Selected file:', document.getElementById('encFile').files[0].name);
                 }
             });
-
-            function handleEncFileChange(file) {
-                if (file) {
-                    console.log('Selected file:', file.name);
-
-                    document.getElementById('encGetFile').innerText = file.name;
-                }
-            }
         }
 
 
@@ -299,58 +298,35 @@ class JSONHandler {
         {
             document.getElementById('decGetFile').addEventListener('dragover', function (event) {
                 event.preventDefault();
-                event.target.classList.add('drag-over');
-            });
-
-            document.getElementById('decGetFile').addEventListener('dragleave', function (event) {
-                event.target.classList.remove('drag-over');
             });
 
             document.getElementById('decGetFile').addEventListener('drop', function (event) {
                 event.preventDefault();
-                event.target.classList.remove('drag-over');
 
                 if (event.dataTransfer.files.length > 0) {
                     document.getElementById('decFile').files = event.dataTransfer.files;
-                    handleDecFileChange(document.getElementById('decFile').files[0]);
+                    document.getElementById('decGetFile').innerText = document.getElementById('decFile').files[0].name;
+                    document.getElementById('decProcess2').classList.add('highlight');
+
+                    console.log('Selected file:', document.getElementById('decFile').files[0].name);
                 }
             });
-
-            function handleDecFileChange(file) {
-                if (file) {
-                    console.log('Selected file:', file.name);
-
-                    document.getElementById('decGetFile').innerText = file.name;
-                }
-            }
 
 
             document.getElementById('decGetKey').addEventListener('dragover', function (event) {
                 event.preventDefault();
-                event.target.classList.add('drag-over');
-            });
-
-            document.getElementById('decGetKey').addEventListener('dragleave', function (event) {
-                event.target.classList.remove('drag-over');
             });
 
             document.getElementById('decGetKey').addEventListener('drop', function (event) {
                 event.preventDefault();
-                event.target.classList.remove('drag-over');
 
                 if (event.dataTransfer.files.length > 0) {
                     document.getElementById('decKey').files = event.dataTransfer.files;
-                    handleDecKeyChange(document.getElementById('decKey').files[0]);
+                    document.getElementById('decGetKey').innerText = document.getElementById('decKey').files[0].name;
+
+                    console.log('Selected file:', document.getElementById('decKey').files[0].name);
                 }
             });
-
-            function handleDecKeyChange(file) {
-                if (file) {
-                    console.log('Selected file:', file.name);
-
-                    document.getElementById('decGetKey').innerText = file.name;
-                }
-            }
         }
     }
 }
@@ -365,6 +341,8 @@ class JSONHandler {
             hideAll();
             selectorsShow();
             encScreen1Show();
+            document.getElementById('encSelect').classList.add('highlight');
+            document.getElementById('decSelect').classList.remove('highlight');
         });
 
         // Encrypt file
@@ -408,6 +386,8 @@ class JSONHandler {
             hideAll();
             selectorsShow();
             decScreen1Show();
+            document.getElementById('decSelect').classList.add('highlight');
+            document.getElementById('encSelect').classList.remove('highlight');
         });
 
         // Decrypt file
@@ -441,6 +421,8 @@ class JSONHandler {
 
     // Restart
     document.getElementById('restart').addEventListener('click', function () {
+        delete fileToEncrypt;
+        delete fileToDecrypt;
         start();
     });
 }
@@ -530,6 +512,8 @@ class JSONHandler {
         hideAll();
         selectorsShow();
         encScreen1Show();
+        document.getElementById('encSelect').classList.add('highlight');
+        document.getElementById('decSelect').classList.remove('highlight');
     }
 }
 
@@ -635,6 +619,7 @@ class JSONHandler {
     });
 }
 
+
 // Change theme
 {
     document.getElementById('theme').addEventListener('change', function () {
@@ -646,6 +631,18 @@ class JSONHandler {
             document.documentElement.style.setProperty('--highlight', '#F6FAD9');
             document.documentElement.style.setProperty('--highlight-on-hover', '#FBFFC4');
 
+            document.getElementById("encSelect").querySelector("img").src = "icons/light/lock_locked.png";
+            document.getElementById("decSelect").querySelector("img").src = "icons/light/lock_unlocked.png";
+            document.getElementById("encGetFile").querySelector("img").src = "icons/light/file_dec.png";
+            document.getElementById("encDownloadFile").querySelector("img").src = "icons/light/file_enc.png";
+            document.getElementById("encDownloadKey").querySelector("img").src = "icons/light/key.png";
+            document.getElementById("decGetFile").querySelector("img").src = "icons/light/file_enc.png";
+            document.getElementById("decGetKey").querySelector("img").src = "icons/light/key.png";
+            document.getElementById("decDownloadFile").querySelector("img").src = "icons/light/file_dec.png";
+            document.getElementById("faq").querySelector("img").src = "icons/light/faq.png";
+            document.querySelector(".select-language").style.backgroundImage = "url(icons/light/language.png)";
+            document.querySelector(".select-theme").style.backgroundImage = "url(icons/light/theme.png)";
+
         }
 
         // Dark
@@ -655,8 +652,22 @@ class JSONHandler {
             document.documentElement.style.setProperty('--box-shadow', '#B9BDAD');
             document.documentElement.style.setProperty('--highlight', '#023345');
             document.documentElement.style.setProperty('--highlight-on-hover', '#35485F');
+
+            document.getElementById("encSelect").querySelector("img").src = "icons/dark/lock_locked.png";
+            document.getElementById("decSelect").querySelector("img").src = "icons/dark/lock_unlocked.png";
+            document.getElementById("encGetFile").querySelector("img").src = "icons/dark/file_dec.png";
+            document.getElementById("encDownloadFile").querySelector("img").src = "icons/dark/file_enc.png";
+            document.getElementById("encDownloadKey").querySelector("img").src = "icons/dark/key.png";
+            document.getElementById("decGetFile").querySelector("img").src = "icons/dark/file_enc.png";
+            document.getElementById("decGetKey").querySelector("img").src = "icons/dark/key.png";
+            document.getElementById("decDownloadFile").querySelector("img").src = "icons/dark/file_dec.png";
+            document.getElementById("faq").querySelector("img").src = "icons/dark/faq.png";
+            document.querySelector(".select-language").style.backgroundImage = "url(icons/dark/language.png)";
+            document.querySelector(".select-theme").style.backgroundImage = "url(icons/dark/theme.png)";
+
         }
     });
 }
+
 
 start();
