@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-GB">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Encrypt/Decrypt</title>
-    <link rel="icon" href="icons/key.png">
+    <link rel="icon" href="icons/light/key.png">
     <link defer rel="stylesheet" href="main.css">
     <script defer src="app.js"></script>
 </head>
@@ -31,7 +31,7 @@
 
         <div id="decScreen1">
             <div class="split-in-2">
-                <button id="decGetFile" class="button tall"><img src="icons\light\file_enc.png"/><br /><span>Drop or select .enc</span></button>
+                <button id="decGetFile" class="button tall"><img src="icons\light\file_enc.png" /><br /><span>Drop or select .enc</span></button>
                 <input type="file" accept=".enc" id="decFile" hidden>
                 <button id="decGetKey" class="button tall"><img src="icons\light\key.png" /><br /><span>Drop or select .json</span></button>
                 <input type="file" accept=".json" id="decKey" hidden>
@@ -55,13 +55,13 @@
         </div>
 
         <div class="split-in-3">
-            <button class="button-no-border" id="faq"><img src="icons\light\faq.png" /></button>
+            <button class="modal-help-open button-no-border" id="help" aria-label="Help"><img src="icons\light\help.png" /></button>
 
             <select class="button-no-border select-language" id="language">
-                <option value="en">English</option>
-                <option value="ch">简体中文</option>
+                <option value="en-GB">English</option>
+                <option value="zh-CN">简体中文</option>
                 <option value="hi">Hindi</option>
-                <option value="sp">Español</option>
+                <option value="es">Español</option>
                 <option value="fr">Français</option>
                 <option value="ro">Română</option>
             </select>
@@ -72,5 +72,30 @@
             </select>
         </div>
     </div>
+
+    <div class="modal modal-help">
+        <div class="modal-header">
+            <div class="modal-title modal-help-title"><h1>Help Page</h1></div>
+            <button class="modal-close modal-help-close">&times;</button>
+        </div>
+        <div class="modal-content modal-help-content">
+            <h1>How to Use the Application</h1>
+            <ul>
+                <li>Choose Mode: Select ‘Encrypt’ or ‘Decrypt’.</li>
+                <li>Load Files: Choose the files you need to process.</li>
+                <li>Process: Hit ‘Process’. Once processing is complete, save buttons will appear.</li>
+                <li>Save Files: Click to save files to your device.</li>
+                <li>Secure Key: Store the encryption key in a secure location.</li>
+                <li>Reset: After encryption, press ‘Reset’ to clear sensitive data.</li>
+                <li>Safety Reminder: Never leave your computer unattended after encryption without hitting ‘Reset’.</li>
+                <li>Decryption: Use the key and the encrypted file together in ‘Decrypt’ mode to revert to the original file.</li>
+                <li>Key Caution: Using a different key will result in decryption failure.</li>
+            </ul><br />
+
+            <h1>Your Data Privacy</h1>
+            Your files are processed locally on your device. No data is uploaded to servers, ensuring your information remains confidential in the security of your computer.
+        </div>
+    </div>
+    <div class="overlay"></div>
 </body>
 </html>
