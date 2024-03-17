@@ -24,24 +24,50 @@
                 // Otherwise set name of File
                 this.name = file.name;
 
-                const reader = new FileReader();
+                // If file is a JSON (i.e. containing key)
+                if (file.type.includes('json')) {
+                    const reader = new FileReader();
 
-                // When file successfully loaded
-                reader.onload = (event) => {
-                    // Set contents of File
-                    this.contents = event.target.result;
-                    // Resolve promise with the file contents
-                    resolve(this.contents);
-                };
+                    // When file successfully loaded
+                    reader.onload = () => {
+                        // Set contents of File
+                        this.contents = reader.result;
+                        // Resolve promise with the file contents
+                        resolve(this.contents);
+                    };
 
-                // If error reading file
-                reader.onerror = (error) => {
-                    // Log error and reject promise
-                    console.error('Error reading file:', error);
-                    reject(error);
-                };
+                    // If error reading file
+                    reader.onerror = (error) => {
+                        // Log error and reject promise
+                        console.error('Error reading file:', error);
+                        reject(error);
+                    };
 
-                reader.readAsText(file);
+                    // Read contents as text
+                    reader.readAsText(file);
+                }
+                // For other file types (i.e. file to encrypt/decrypt)
+                else {
+                    const reader = new FileReader();
+
+                    // When file successfully loaded
+                    reader.onload = () => {
+                        // Set contents of File
+                        this.contents = new Uint8Array(reader.result);
+                        // Resolve promise with the file contents
+                        resolve(this.contents);
+                    };
+
+                    // If error reading file
+                    reader.onerror = (error) => {
+                        // Log error and reject promise
+                        console.error('Error reading file:', error);
+                        reject(error);
+                    };
+
+                    // Read in binary format
+                    reader.readAsArrayBuffer(file);
+                }
             });
         }
 
@@ -79,7 +105,7 @@
         // Download File
         downloadFile() {
             // Create a Blob containing the file content
-            const blob = new Blob([this.contents], { type: 'text/plain' });
+            const blob = new Blob([this.contents]);
 
             // Create an anchor element
             const aTag = document.createElement('a');
@@ -115,25 +141,25 @@ class Encryptor {
 
         // Encrypts data given as input and returns cyphertext
         encrypt(data) {
-            // Initialise empty string to hold cyphertext
-            let cyphertext = '';
-
             // Check 'data' is not null (i.e. a file was selected)
             if (data != null) {
 
                 // 'plaintext' is assigned the value of 'data'
                 const plaintext = data;
 
+                // Initialize a typed array with the same length as the plaintext to hold the cyphertext
+                let cyphertext = new Uint8Array(plaintext.length);
+
                 // Loop over each character in 'plaintext'
                 for (let i = 0; i < plaintext.length; i++) {
                     // Character shift is calculated using the position of the character in the plaintext and a number from the key
                     let shift = Number(this.key[(plaintext.length + i) % this.key.length]);
-                    // Get the UTF-16 value of the current character in 'plaintext'
-                    let currentCharCode = plaintext.charCodeAt(i);
-                    // Shift the current character
+                    // Get the value at the ith position in the typed array in 'plaintext'
+                    let currentCharCode = plaintext[i];
+                    // Shift the value
                     currentCharCode = currentCharCode + shift;
-                    // Add new character to the cyphertext
-                    cyphertext += String.fromCharCode(currentCharCode);
+                    // Save the new value to the typed array
+                    cyphertext[i] = currentCharCode;
                 }
 
                 // Output results to console
@@ -154,8 +180,8 @@ class Encryptor {
             // Initiates empty string to build number
             let number = '';
 
-            // Generate 32 to 127 digits for the number
-            for (let i = 0; i < (Math.floor((Math.random() * 96) + 32)); i++) {
+            // Generate 128 to 255 digits for the number
+            for (let i = 0; i < (Math.floor((Math.random() * 128) + 128)); i++) {
                 let newDigit;
                 do {
                     // Generate a new digit from 1 to 9
@@ -177,8 +203,6 @@ class Decryptor {
 
         // Decrypts data given as input and returns plaintext
         decrypt(data) {
-            // Initialise empty string to hold plaintext
-            let plaintext = '';
 
             // Check 'data' is not null (i.e. a file was selected)
             if (data != null) {
@@ -186,16 +210,19 @@ class Decryptor {
                 // 'cyphertext' is assigned the value of 'data'
                 const cyphertext = data;
 
+                // Initialize a typed array with the same length as the cyphertext to hold the plaintext
+                let plaintext = new Uint8Array(cyphertext.length);
+
                 // Loop over each character in 'cyphertext'
                 for (let i = 0; i < cyphertext.length; i++) {
                     // Character shift is calculated using the position of the character in the cyphertext and a number from the key
                     let shift = Number(this.key[(cyphertext.length + i) % this.key.length]);
-                    // Get the UTF-16 value of the current character in 'cyphertext'
-                    let currentCharCode = cyphertext.charCodeAt(i);
-                    // Shift the current character back
+                    // Get the value at the ith position in the typed array in 'cyphertext'
+                    let currentCharCode = cyphertext[i];
+                    // Shift the value back
                     currentCharCode = currentCharCode - shift;
-                    // Add new character to the plaintext
-                    plaintext += String.fromCharCode(currentCharCode);
+                    // Save the new value to the typed array
+                    plaintext[i] = currentCharCode;
                 }
 
                 // Output results to console
