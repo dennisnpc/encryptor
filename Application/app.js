@@ -88,7 +88,6 @@
             try {
                 // Read key using JSONHandler
                 this.decryptor.key = await this.JSONHandler.readKey();
-                console.log('Key loaded:', this.decryptor.key);
             }
             // If loading key fails
             catch (error) {
@@ -162,16 +161,12 @@ class Encryptor {
                     cyphertext[i] = currentCharCode;
                 }
 
-                // Output results to console
-                console.log('Encrypted:', cyphertext);
-                console.log('Key:', this.key);
-
                 return cyphertext;
             }
 
             // If no file selected
             else {
-                console.log('No file selected');
+                console.error('No file selected to encrypt');
             }
         }
 
@@ -225,16 +220,12 @@ class Decryptor {
                     plaintext[i] = currentCharCode;
                 }
 
-                // Output results to console
-                console.log('Decrypted:', plaintext);
-                console.log('Key:', this.key);
-
                 return plaintext;
             }
 
             // If no file selected
             else {
-                console.log('No file selected');
+                console.error('No file selected to decrypt');
             }
         }
 }
@@ -253,12 +244,11 @@ class JSONHandler {
 
                 // If the parsed JSON object has a property named 'key', log the key to the console and return it
                 if (parsedJson && parsedJson.key) {
-                    console.log('Key from JSON:', parsedJson.key);
                     return parsedJson.key;
                 }
                     // If JSON object doesn't have a 'key' property, log error message
                 else {
-                    console.log('Invalid JSON format or key not found');
+                    console.error('Invalid JSON format or key not found');
                 }
             }
             // If there is an error while reading the file or parsing the JSON, log it
@@ -302,7 +292,7 @@ class JSONHandler {
 
             // If no file has been encrypted
             else {
-                console.log('No key has been generated');
+                console.error('No key has been generated');
             }
         }
 }
@@ -310,6 +300,30 @@ class JSONHandler {
 
 // File selectors
 {
+    // Functions
+    {   // Enables, highlights, and adds higlhight on hover to button
+        function enableButton(buttonID) {
+            const button = document.getElementById(buttonID);
+            button.classList.add('highlight');
+            button.disabled = false;
+            button.classList.add('highlight-on-hover');
+        }
+        // Reverts 'enableButton()'
+        function disableButton(buttonID) {
+            const button = document.getElementById(buttonID);
+            button.classList.remove('highlight');
+            button.disabled = true;
+            button.classList.remove('highlight-on-hover');
+        }
+
+        // Reverts all 'Process' buttons to default (disabled, no highlight)
+        function processButtonsReset() {
+            disableButton('encProcess2');
+            disableButton('decProcess2');
+        }
+    }
+
+
     // By click
     {
         // Programmatically trigger a click event on the HTML file input element with id 'encFile' when button with id 'encFile' is clicked, to open the file picker dialog and select file to encrypt
@@ -322,15 +336,15 @@ class JSONHandler {
             if (this.files.length > 0) {
                 // Change text of HTML element to file name
                 document.querySelector('#encGetFile span').innerText = this.files[0].name;
-                // Highlight 'Process' button to attract attention to next step
-                document.getElementById('encProcess2').classList.add('highlight');
+                // Enable 'Process' button and highlight it to attract attention to next step
+                enableButton('encProcess2');
             }
             // If no file selected
             else {
                 // Set text of HTML element to default
                 document.querySelector('#encGetFile span').innerText = 'Drop or select .txt';
-                // Remove highlight on 'Process' button
-                document.getElementById('encProcess2').classList.remove('highlight');
+                // Remove highlight on 'Process' button and disable it
+                disableButton('encProcess2');
             }
         });
 
@@ -340,22 +354,31 @@ class JSONHandler {
         };
         // Listen for file being selected
         document.getElementById('decFile').addEventListener('input', function () {
-            // If file selected
-            if (this.files.length > 0) {
+            // If file selected and file to decrypt has '.enc' extension
+            if ((this.files.length > 0) && (this.files[0].name.includes('.enc'))) {
                 // Change text of HTML element to file name
                 document.querySelector('#decGetFile span').innerText = this.files[0].name;
                 // If the key file was also selected
                 if (document.getElementById('decKey').files.length) {
-                    // Highlight 'Process' button to attract attention to next step
-                    document.getElementById('decProcess2').classList.add('highlight');
+                    // Enable 'Process' button and highlight it to attract attention to next step
+                    enableButton('decProcess2');
                 }
             }
-            // If no file selected
+            // If no file selected or didn't have '.enc' extension
             else {
+                // Remove highlight on 'Process' button and disable it
+                disableButton('decProcess2');
                 // Set text of HTML element to default
                 document.querySelector('#decGetFile span').innerText = 'Drop or select .enc';
-                // Remove highlight on 'Process' button
-                document.getElementById('decProcess2').classList.remove('highlight');
+
+                // If file didn't have '.enc' extension
+                if ((this.files.length !== 0) && (!this.files[0].name.includes('.enc'))) {
+                    // Display error
+                    alert("Please select an encrypted file with '.enc' extension");
+                }
+
+                // Discard any file selected previously
+                document.getElementById('decFile').value = '';
             }
         });
 
@@ -365,18 +388,28 @@ class JSONHandler {
         };
         // Listen for file being selected
         document.getElementById('decKey').addEventListener('input', function () {
-            if (this.files.length > 0) {
+            if ((this.files.length > 0) && (this.files[0].type == 'application/json')) {
                 // Change text of HTML element to file name
                 document.querySelector('#decGetKey span').innerText = this.files[0].name;
                 // If a file to decrypt was also selected
                 if (document.getElementById('decFile').files.length) {
-                    // Highlight 'Process' button to attract attention to next step
-                    document.getElementById('decProcess2').classList.add('highlight');
+                    // Enable 'Process' button and highlight it to attract attention to next step
+                    enableButton('decProcess2');
                 }
             }
             else {
+                // Remove highlight on 'Process' button and disable it
+                disableButton('decProcess2');
+                // Set text of HTML element to default
                 document.querySelector('#decGetKey span').innerText = 'Drop or select .json';
-                document.getElementById('decProcess2').classList.remove('highlight');
+
+                // If key was not in JSON file type
+                if ((this.files.length !== 0) && (this.files[0].type !== 'application/json')) {
+                    alert('Please select a JSON file containing a key');
+                }
+
+                // Discard any key selected previously
+                document.getElementById('decKey').value = '';
             }
         });
     }
@@ -400,10 +433,8 @@ class JSONHandler {
                     document.getElementById('encFile').files = event.dataTransfer.files;
                     // Change the text of the HTML element to the name of the file
                     document.querySelector('#encGetFile span').innerText = document.getElementById('encFile').files[0].name;
-                    // Highlight 'Process' button
-                    document.getElementById('encProcess2').classList.add('highlight');
-
-                    console.log('Selected file:', document.getElementById('encFile').files[0].name);
+                    // Enable 'Process' button
+                    enableButton('encProcess2');
                 }
             });
         }
@@ -420,14 +451,29 @@ class JSONHandler {
             document.getElementById('decGetFile').addEventListener('drop', function (event) {
                 event.preventDefault();
 
-                if (event.dataTransfer.files.length > 0) {
+                // Check if a file to decrypt with '.enc' extension has been dropped
+                if ((event.dataTransfer.files.length > 0) && (event.dataTransfer.files[0].name.includes('.enc'))) {
                     // Change the text of the HTML element to the name of the file
                     document.getElementById('decFile').files = event.dataTransfer.files;
                     document.querySelector('#decGetFile span').innerText = document.getElementById('decFile').files[0].name;
-                    // Highlight 'Process' button
-                    document.getElementById('decProcess2').classList.add('highlight');
+                    // Enable 'Process' button
+                    enableButton('decProcess2');
+                }
+                // If no file selected or didn't have '.enc' extension
+                else {
+                    // Remove highlight on 'Process' button and disable it
+                    disableButton('decProcess2');
+                    // Set text of HTML element to default
+                    document.querySelector('#decGetFile span').innerText = 'Drop or select .enc';
 
-                    console.log('Selected file:', document.getElementById('decFile').files[0].name);
+                    // If file didn't have '.enc' extension
+                    if ((event.dataTransfer.files.length !== 0) && (!event.dataTransfer.files[0].name.includes('.enc'))) {
+                        // Display error
+                        alert("Please select an encrypted file with '.enc' extension");
+                    }
+
+                    // Discard any file selected previously
+                    document.getElementById('decFile').value = '';
                 }
             });
 
@@ -441,13 +487,26 @@ class JSONHandler {
             document.getElementById('decGetKey').addEventListener('drop', function (event) {
                 event.preventDefault();
 
-                if (event.dataTransfer.files.length > 0) {
+                if ((event.dataTransfer.files.length > 0) && (event.dataTransfer.files[0].type == 'application/json')) {
                     // Change the text of the HTML element to the name of the file
                     document.getElementById('decKey').files = event.dataTransfer.files;
-                    // Highlight 'Process' button
                     document.querySelector('#decGetKey span').innerText = document.getElementById('decKey').files[0].name;
+                    // Enable 'Process' button
+                    enableButton('decProcess2');
+                }
+                else {
+                    // Remove highlight on 'Process' button and disable it
+                    disableButton('decProcess2');
+                    // Set text of HTML element to default
+                    document.querySelector('#decGetKey span').innerText = 'Drop or select .json';
 
-                    console.log('Selected file:', document.getElementById('decKey').files[0].name);
+                    // If key was not in JSON file type
+                    if ((event.dataTransfer.files.length !== 0) && (event.dataTransfer.files[0].type !== 'application/json')) {
+                        alert('Please select a JSON file containing a key');
+                    }
+
+                    // Discard any key selected previously
+                    document.getElementById('decKey').value = '';
                 }
             });
         }
@@ -457,6 +516,21 @@ class JSONHandler {
 
 // Buttons
 {
+    // Functions
+    {   
+        // Removes original files from memory (to be used after processing done)
+        function discardOriginalFiles() {
+            document.getElementById('encFile').value = '';
+            document.getElementById('decFile').value = '';
+            document.getElementById('decKey').value = '';
+        }
+        function fileSelectorButtonTextReset() {
+            document.querySelector('#encGetFile span').innerText = 'Drop or select .txt';
+            document.querySelector('#decGetFile span').innerText = 'Drop or select .enc';
+            document.querySelector('#decGetKey span').innerText = 'Drop or select .json';
+        }
+    }
+
     // To encrypt
     {
         // Show encrypt
@@ -476,39 +550,40 @@ class JSONHandler {
 
             try {
                 await fileToEncrypt.open('encFile')
-                console.log(fileToEncrypt.contents);
 
                 fileToEncrypt.encryptFile();
 
-                console.log('File encrypted and downloaded successfully');
+                // Once file has been encrypted
+                discardOriginalFiles();
+                fileSelectorButtonTextReset();
+
+                // Show page to save files generated
+                hideAll();
+                encScreen2Show();
+                restartShow();
             } catch (error) {
-                console.error('Error encrypting and downloading:', error);
+                console.error('Error encrypting file:', error);
             }
-
-            // Once file has been encrypted
-
-            // Discard the original file
-            document.getElementById('encFile').value = '';
-            // Reset text of selector button from file name to default
-            document.querySelector('#encGetFile span').innerText = 'Drop or select .txt';
-            // Remove highlight on 'Process' button
-            document.getElementById('encProcess2').classList.remove('highlight');
-
-
-            // Show page to save files generated
-            hideAll();
-            encScreen2Show();
-            restartShow();
         });
 
         // Download encrypted file
         document.getElementById('encDownloadFile').addEventListener('click', function () {
-            fileToEncrypt.downloadFile();
+            try {
+                fileToEncrypt.downloadFile();
+            }
+            catch (error) {
+                console.error('Error downloading file:', error);
+            }
         });
 
         // Download key
         document.getElementById('encDownloadKey').addEventListener('click', function () {
-            fileToEncrypt.downloadKey();
+            try {
+                fileToEncrypt.downloadKey();
+            }
+            catch (error) {
+                console.error('Error downloading key:', error);
+            }
         });
     }
 
@@ -532,36 +607,32 @@ class JSONHandler {
 
             try {
                 await fileToDecrypt.open('decFile');
-                console.log(fileToDecrypt.contents);
 
                 await fileToDecrypt.loadKey();
                 fileToDecrypt.decryptFile();
+
+                // Once file has been decrypted
+                discardOriginalFiles();
+                fileSelectorButtonTextReset();
+
+                // Show page to save file generated
+                hideAll();
+                decScreen2Show();
+                restartShow();
             }
             catch (error) {
-                console.error('Error decrypting and downloading:', error);
+                console.error('Error decrypting file:', error);
             }
-
-            // Once file has been decrypted
-
-            // Discard the original files
-            document.getElementById('decFile').value = '';
-            document.getElementById('decKey').value = '';
-            // Reset text of selector buttos from file name to default
-            document.querySelector('#decGetFile span').innerText = 'Drop or select .enc';
-            document.querySelector('#decGetKey span').innerText = 'Drop or select .json';
-            // Remove highlight on 'Process' button
-            document.getElementById('decProcess2').classList.remove('highlight');
-
-
-            // Show page to save file generated
-            hideAll();
-            decScreen2Show();
-            restartShow();
         });
 
         // Download decrypted file
         document.getElementById('decDownloadFile').addEventListener('click', function () {
-            fileToDecrypt.downloadFile();
+            try {
+                fileToDecrypt.downloadFile();
+            }      
+            catch (error) {
+                console.error('Error downloading file:', error);
+            }
         });
     }
 
@@ -570,6 +641,7 @@ class JSONHandler {
     document.getElementById('restart').addEventListener('click', function () {
         delete fileToEncrypt;
         delete fileToDecrypt;
+        processButtonsReset();
         start();
     });
 }
@@ -600,6 +672,7 @@ class JSONHandler {
             function encScreen1Show() {
                 document.getElementById('encScreen1').style.display = 'grid';
                 document.getElementById('encProcess').style.display = 'grid';
+                toolbarShow();
             }
 
             function encScreen2Hide() {
@@ -607,6 +680,7 @@ class JSONHandler {
             }
             function encScreen2Show() {
                 document.getElementById('encScreen2').style.display = 'grid';
+                toolbarShow();
             }
         }
 
@@ -620,6 +694,7 @@ class JSONHandler {
             function decScreen1Show() {
                 document.getElementById('decScreen1').style.display = 'grid';
                 document.getElementById('decProcess').style.display = 'grid';
+                toolbarShow();
             }
 
             function decScreen2Hide() {
@@ -627,14 +702,23 @@ class JSONHandler {
             }
             function decScreen2Show() {
                 document.getElementById('decScreen2').style.display = 'block';
+                toolbarShow();
             }
         }
     }
- 
+
+    function toolbarHide() {
+        document.getElementById('toolbar').style.display = 'none';
+    }
+    function toolbarShow() {
+        document.getElementById('toolbar').style.display = 'grid';
+    }
+
     function processingHide() {
         document.getElementById('processing-screen').style.display = 'none';
     }
     function processingShow() {
+        hideAll();
         document.getElementById('encProcess').style.display = 'none';
         document.getElementById('decProcess').style.display = 'none';
         document.getElementById('processing-screen').style.display = 'grid';
@@ -653,7 +737,8 @@ class JSONHandler {
         encScreen2Hide();
         decScreen1Hide();
         decScreen2Hide();
-        processingHide()
+        toolbarHide();
+        processingHide();
         restartHide();
     }
 
@@ -743,7 +828,7 @@ class JSONHandler {
                 'Dark': 'Dark',
                 'Help': 'help',
                 'Modal-Help-Title': "<h1>Help Page</h1>",
-                'Modal-Help-Content': "<h1>How to Use the Application</h1> <ul> <li>Choose Mode: Select ‘Encrypt’ or ‘Decrypt’.</li> <li>Load Files: Choose the files you need to process.</li> <li>Process: Hit ‘Process’. Once processing is complete, save buttons will appear.</li> <li>Save Files: Click to save files to your device.</li> <li>Secure Key: Store the encryption key in a secure location.</li> <li>Reset: After encryption, press ‘Reset’ to clear sensitive data.</li> <li>Safety Reminder: Never leave your computer unattended after encryption without hitting ‘Reset’.</li> <li>Decryption: Use the key and the encrypted file together in ‘Decrypt’ mode to revert to the original file.</li> <li>Key Caution: Using a different key will result in decryption failure.</li> </ul><br /> <h1>Your Data Privacy</h1> Your files are processed locally on your device. No data is uploaded to servers, ensuring your information remains confidential in the security of your computer."
+                'Modal-Help-Content': "<h1>Please note: The application security measures are not yet fully established. It is strongly advices against using it for any serious applications that require strict security.</h1><br /><h1>How to Use the Application</h1><ul><li>Choose Mode: Select ‘Encrypt’ or ‘Decrypt’.</li><li>Load Files: Choose the files you need to process.</li><li>Process: Hit ‘Process’. Once processing is complete, save buttons will appear.</li><li>Save Files: Click to save files to your device.</li><li>Secure Key: Store the encryption key in a secure location.</li><li>Reset: After encryption, press ‘Reset’ to clear sensitive data.</li><li>Safety Reminder: Never leave your computer unattended after encryption without hitting ‘Reset’.</li><li>Decryption: Use the key and the encrypted file together in ‘Decrypt’ mode to revert to the original file.</li><li>Key Caution: Using a different key will result in decryption failure.</li><li>General:<ul><li>All file types and formats accepted.</li><li>‘.enc’ appended to encrypted file names for easy identification and removed from file name after decryption.</li><li>You may rename the file names, but please do not change the file extensions.</li></ul></li></ul><br /><h1>Your Data Privacy</h1>Your files are processed locally on your device. No data is uploaded to servers, ensuring your information remains confidential in the security of your computer."
             },
             'zh-CN': {
                 'Encrypt': '加密',
@@ -762,7 +847,7 @@ class JSONHandler {
                 'Dark': '暗',
                 'Help': '帮助',
                 'Modal-Help-Title': "<h1>帮助页面</h1>",
-                'Modal-Help-Content': "<h1>如何使用该应用程序</h1> <ul> <li>选择模式：选择“加密”或“解密”。</li> <li>加载文件：选择需要处理的文件。</li> <li>处理：点击“处理”。处理完成后，保存按钮将出现。</li> <li>保存文件：点击以将文件保存到您的设备上。</li> <li>安全密钥：将加密密钥存储在安全位置。</li> <li>重置：加密后，点击“重置”以清除敏感数据。</li> <li>安全提醒：加密后，请务必点击“重置”，不要将计算机无人看管。</li> <li>解密：在“解密”模式下，使用密钥和加密文件一起还原为原始文件。</li> <li>密钥注意：使用不同的密钥会导致解密失败。</li> </ul><br /> <h1>您的数据隐私</h1> 您的文件在您的设备上本地处理。没有数据上传到服务器，确保您的信息在计算机的安全中保持机密。"
+                'Modal-Help-Content': "<h1>请注意：该应用程序的安全措施尚未完全建立。强烈建议不要将其用于需要严格安全性的任何重要应用程序。</h1><br /><h1>如何使用该应用程序</h1><ul><li>选择模式：选择“加密”或“解密”。</li><li>加载文件：选择您需要处理的文件。</li><li>处理：点击“处理”。一旦处理完成，将出现保存按钮。</li><li>保存文件：点击以将文件保存到您的设备上。</li><li>安全密钥：将加密密钥存储在安全的位置。</li><li>重置：加密后，按下“重置”以清除敏感数据。</li><li>安全提醒：加密后，请务必按下“重置”，不要将计算机无人看管。</li><li>解密：使用密钥和加密文件一起在“解密”模式下恢复为原始文件。</li><li>密钥注意：使用不同的密钥将导致解密失败。</li><li>常规：<ul><li>接受所有文件类型和格式。</li><li>加密文件名后附加“.enc”以便于识别，并在解密后从文件名中删除。</li><li>您可以重命名文件名，但请不要更改文件扩展名。</li></ul></li></ul><br /><h1>您的数据隐私</h1>您的文件在您的设备上进行本地处理。没有数据上传到服务器，确保您的信息保持在计算机安全的环境中保密。"
             },
             hi: {
                 'Encrypt': 'एन्क्रिप्ट',
@@ -781,7 +866,7 @@ class JSONHandler {
                 'Dark': 'अंधेरा',
                 'Help': 'सहायता',
                 'Modal-Help-Title': "<h1>सहायता पृष्ठ</h1>",
-                'Modal-Help-Content': "<h1>ऐप्लिकेशन का उपयोग कैसे करें</h1> <ul> <li>मोड चुनें: 'एन्क्रिप्ट' या 'डिक्रिप्ट' का चयन करें।</li> <li>फ़ाइलें लोड करें: प्रोसेस करने के लिए आपकी आवश्यकता है फ़ाइलों का चयन करें।</li> <li>प्रोसेस: 'प्रोसेस' पर क्लिक करें। प्रोसेसिंग पूरी होने के बाद, सेविंग बटन दिखाई देगा।</li> <li>फ़ाइलें सहेजें: अपने डिवाइस पर फ़ाइलें सहेजने के लिए क्लिक करें।</li> <li>सुरक्षित कुंजी: एन्क्रिप्शन कुंजी को एक सुरक्षित स्थान पर संग्रहित करें।</li> <li>रीसेट: एन्क्रिप्शन के बाद, संवेदनशील डेटा को हटाने के लिए 'रीसेट' दबाएं।</li> <li>सुरक्षा स्मारक: एन्क्रिप्शन के बाद अपने कंप्यूटर को असुरक्षित न छोड़ें बिना 'रीसेट' दबाएं।</li> <li>डिक्रिप्शन: मूल फ़ाइल पर वापस आने के लिए 'डिक्रिप्ट' मोड में कुंजी और एन्क्रिप्टेड फ़ाइल का साथ उपयोग करें।</li> <li>कुंजी सावधानी: अलग कुंजी का उपयोग करने से डिक्रिप्शन विफलता का परिणाम होगा।</li> </ul><br /> <h1>आपका डेटा गोपनीयता</h1> आपकी फ़ाइलें आपके डिवाइस पर स्थानीय रूप से प्रोसेस की जाती हैं। कोई डेटा सर्वर पर अपलोड नहीं किया जाता है, जिससे आपकी जानकारी आपके कंप्यूटर की सुरक्षा में गोपनीय रहती है।"
+                'Modal-Help-Content': "<h1>कृपया ध्यान दें: एप्लिकेशन सुरक्षा उपाय अभी पूरी तरह से स्थापित नहीं हुए हैं। किसी भी सख्त सुरक्षा की आवश्यकता वाले किसी भी महत्वपूर्ण एप्लिकेशन के लिए इसका उपयोग करने का ख़ासा अनुशंसा दी जाती है।</h1><br /><h1>ऐप्लिकेशन का उपयोग कैसे करें</h1><ul><li>मोड चुनें: 'एन्क्रिप्ट' या 'डिक्रिप्ट' का चयन करें।</li><li>फ़ाइलें लोड करें: प्रोसेस करने के लिए आपकी फ़ाइलें चुनें।</li><li>प्रोसेस: 'प्रोसेस' पर क्लिक करें। प्रोसेसिंग पूरी होने के बाद, सेव बटन दिखाई देंगे।</li><li>फ़ाइलें सहेजें: अपने डिवाइस पर फ़ाइलें सहेजने के लिए क्लिक करें।</li><li>सुरक्षित कुंजी: एन्क्रिप्शन कुंजी को एक सुरक्षित स्थान में सहेजें।</li><li>रीसेट: एन्क्रिप्शन के बाद, संवेदनशील डेटा को साफ करने के लिए 'रीसेट' दबाएं।</li><li>सुरक्षा स्मरण: एन्क्रिप्शन के बाद, 'रीसेट' न करके अपने कंप्यूटर को अज्ञात किया जाने से बचें।</li><li>डिक्रिप्शन: मूल फ़ाइल में वापस जाने के लिए कुंजी और एन्क्रिप्टेड फ़ाइल का उपयोग करें।</li><li>कुंजी सावधानी: अलग कुंजी का उपयोग करने से डिक्रिप्शन असफल होगा।</li><li>सामान्य:<ul><li>सभी फ़ाइल प्रकार और स्वरूप स्वीकार किए जाते हैं।</li><li>'.enc' संलग्न होता है जो आसान पहचान के लिए एन्क्रिप्टेड फ़ाइलों के नामों में जोड़ा जाता है और डिक्रिप्शन के बाद फ़ाइल नाम से हटा दिया जाता है।</li><li>आप फ़ाइलों के नाम को बदल सकते हैं, लेकिन कृपया फ़ाइल एक्सटेंशन को नहीं बदलें।</li></ul></li></ul><br /><h1>आपकी डेटा गोपनीयता</h1>आपकी फ़ाइलें आपके डिवाइस पर स्थानीय रूप से प्रोसेस की जाती हैं। कोई डेटा सर्वरों पर अपलोड नहीं किया जाता है, जिससे आपकी जानकारी आपके कंप्यूटर की सुरक्षा में गोपनीय रहती है।"
             },
             es: {
                 'Encrypt': 'Encriptar',
@@ -800,7 +885,7 @@ class JSONHandler {
                 'Dark': 'Oscuro',
                 'Help': 'ayuda',
                 'Modal-Help-Title': "<h1>Página de Ayuda</h1>",
-                'Modal-Help-Content': "<h1>Cómo Utilizar la Aplicación</h1> <ul> <li>Seleccionar Modo: Elija 'Encriptar' o 'Desencriptar'.</li> <li>Cargar Archivos: Seleccione los archivos que necesita procesar.</li> <li>Procesar: Presione 'Procesar'. Una vez completado el procesamiento, aparecerán los botones de guardado.</li> <li>Guardar Archivos: Haga clic para guardar los archivos en su dispositivo.</li> <li>Clave Segura: Guarde la clave de encriptación en un lugar seguro.</li> <li>Reiniciar: Después de la encriptación, presione 'Reiniciar' para borrar datos sensibles.</li> <li>Recordatorio de Seguridad: Nunca deje su computadora desatendida después de encriptar sin presionar 'Reiniciar'.</li> <li>Desencriptar: Utilice la clave y el archivo encriptado juntos en modo 'Desencriptar' para volver al archivo original.</li> <li>Precaución con la Clave: Usar una clave diferente resultará en un fallo de desencriptación.</li> </ul><br /> <h1>Su Privacidad de Datos</h1> Sus archivos son procesados localmente en su dispositivo. No se carga ningún dato en servidores, asegurando que su información permanezca confidencial en la seguridad de su computadora."
+                'Modal-Help-Content': "<h1>Tenga en cuenta: Las medidas de seguridad de la aplicación aún no están completamente establecidas. Se recomienda encarecidamente no utilizarla para aplicaciones serias que requieran una seguridad estricta.</h1><br /><h1>Cómo Utilizar la Aplicación</h1><ul><li>Elegir Modo: Seleccione 'Encriptar' o 'Desencriptar'.</li><li>Cargar Archivos: Elija los archivos que necesita procesar.</li><li>Proceso: Haga clic en 'Proceso'. Una vez completado el procesamiento, aparecerán los botones de guardar.</li><li>Sauvegarder les Fichiers: Haga clic para guardar los archivos en su dispositivo.</li><li>Clave de Seguridad: Guarde la clave de encriptación en un lugar seguro.</li><li>Restablecer: Después de encriptar, presione 'Restablecer' para borrar los datos sensibles.</li><li>Recordatorio de Seguridad: Nunca deje su computadora sin vigilancia después de encriptar sin presionar 'Restablecer'.</li><li>Desencriptar: Utilice la clave y el archivo encriptado juntos en modo 'Desencriptar' para revertir al archivo original.</li><li>Precaución con la Clave: Usar una clave diferente provocará un fallo en la desencriptación.</li><li>General: <ul><li>Se aceptan todos los tipos y formatos de archivos.</li><li>'.enc' se añade a los nombres de archivos encriptados para una fácil identificación y se elimina del nombre de archivo después de la desencriptación.</li><li>Puede cambiar el nombre de los archivos, pero no cambie las extensiones de los archivos.</li></ul></li></ul><br /><h1>Su Privacidad de Datos</h1>Sus archivos se procesan localmente en su dispositivo. No se carga ningún dato en servidores, asegurando así la confidencialidad de su información en la seguridad de su computadora."
             },
             fr: {
                 'Encrypt': 'Crypter',
@@ -819,7 +904,7 @@ class JSONHandler {
                 'Dark': 'Sombre',
                 'Help': 'aide',
                 'Modal-Help-Title': "<h1>Page d'Aide</h1>",
-                'Modal-Help-Content': "<h1>Comment Utiliser l'Application</h1> <ul> <li>Choisir le Mode : Sélectionnez 'Crypter' ou 'Décrypter'.</li> <li>Charger les Fichiers : Choisissez les fichiers que vous devez traiter.</li> <li>Traiter : Appuyez sur 'Traiter'. Une fois le traitement terminé, les boutons de sauvegarde apparaîtront.</li> <li>Enregistrer les Fichiers : Cliquez pour enregistrer les fichiers sur votre appareil.</li> <li>Clé de Sécurité : Stockez la clé de chiffrement dans un endroit sûr.</li> <li>Réinitialiser : Après le chiffrement, appuyez sur 'Réinitialiser' pour effacer les données sensibles.</li> <li>Rappel de Sécurité : Ne laissez jamais votre ordinateur sans surveillance après le chiffrement sans appuyer sur 'Réinitialiser'.</li> <li>Décrypter : Utilisez la clé et le fichier chiffré ensemble en mode 'Décrypter' pour revenir au fichier d'origine.</li> <li>Attention à la Clé : Utiliser une clé différente entraînera un échec de déchiffrement.</li> </ul><br /> <h1>Votre Confidentialité des Données</h1> Vos fichiers sont traités localement sur votre appareil.Aucune donnée n'est téléchargée sur les serveurs, garantissant que vos informations restent confidentielles dans la sécurité de votre ordinateur."
+                'Modal-Help-Content': "<h1>Veuillez noter : Les mesures de sécurité de l'application ne sont pas encore entièrement établies. Il est fortement déconseillé de l'utiliser pour des applications sérieuses nécessitant une sécurité stricte.</h1><br /><h1>Comment Utiliser l'Application</h1><ul><li>Choisissez le Mode : Sélectionnez 'Crypter' ou 'Décrypter'.</li><li>Charger les Fichiers : Choisissez les fichiers que vous devez traiter.</li><li>Traitement : Appuyez sur 'Traitement'. Une fois le traitement terminé, les boutons de sauvegarde apparaîtront.</li><li>Sauvegarder les Fichiers : Cliquez pour sauvegarder les fichiers sur votre appareil.</li><li>Clé de Sécurité : Stockez la clé de cryptage dans un endroit sécurisé.</li><li>Réinitialiser : Après le cryptage, appuyez sur 'Réinitialiser' pour effacer les données sensibles.</li><li>Rappel de Sécurité : Ne laissez jamais votre ordinateur sans surveillance après le cryptage sans appuyer sur 'Réinitialiser'.</li><li>Décryptage : Utilisez la clé et le fichier crypté ensemble en mode 'Décrypter' pour revenir au fichier d'origine.</li><li>Attention à la Clé : Utiliser une clé différente entraînera un échec de décryptage.</li><li>Général :<ul><li>Tous les types et formats de fichiers sont acceptés.</li><li>'.enc' est ajouté aux noms de fichiers cryptés pour une identification facile et retiré du nom de fichier après le décryptage.</li><li>Vous pouvez renommer les noms de fichiers, mais veuillez ne pas changer les extensions de fichiers.</li></ul></li></ul><br /><h1>Votre Confidentialité des Données</h1>Vos fichiers sont traités localement sur votre appareil. Aucune donnée n'est téléchargée sur les serveurs, assurant ainsi la confidentialité de vos informations dans la sécurité de votre ordinateur."
             },
             ro: {
                 'Encrypt': 'Criptează',
@@ -838,7 +923,7 @@ class JSONHandler {
                 'Dark': 'Întuneric',
                 'Help': 'Ajutor',
                 'Modal-Help-Title': "<h1>Pagina de Ajutor</h1>",
-                'Modal-Help-Content': '<h1>Cum să Utilizați Aplicația</h1> <ul> <li>Alegeți Modul: Selectați „Criptare” sau „Decriptare”.</li> <li>Încărcați Fișierele: Alegeți fișierele pe care trebuie să le procesați.</li> <li>Procesați: Apăsați „Procesați”. Odată ce procesul este complet, vor apărea butoanele de salvare.</li> <li>Salvați Fișierele: Faceți clic pentru a salva fișierele pe dispozitivul dvs.</li> <li>Cheia de Securitate: Stocați cheia de criptare într-o locație sigură.</li> <li>Resetare: După criptare, apăsați „Resetare” pentru a șterge datele sensibile.</li> <li>Pentru Siguranță: Nu lăsați niciodată computerul nesupravegheat după criptare fără a apăsa „Resetare”.</li> <li>Decriptare: Utilizați cheia și fișierul criptat împreună în modul „Decriptare” pentru a reveni la fișierul original.</li> <li>Atenție la Cheie: Utilizarea unei chei diferite va duce la eșecul decriptării.</li> </ul><br /> <h1>Confidențialitatea Datelor Dumneavoastră</h1> Fișierele dvs. sunt procesate local pe dispozitivul dvs. Nimic nu este încărcat pe servere, asigurând confidențialitatea informațiilor dvs. în securitatea computerului dvs.'
+                'Modal-Help-Content': "<h1>Vă rugăm să rețineți: Măsurile de securitate ale aplicației nu sunt încă complet stabilite. Se recomandă cu tărie să nu o utilizați pentru aplicații serioase care necesită o securitate strictă.</h1><br /><h1>Cum să Utilizați Aplicația</h1><ul><li>Alegeți Modul: Selectați 'Criptare' sau 'Decriptare'.</li><li>Încărcați Fișierele: Alegeți fișierele pe care trebuie să le procesați.</li><li>Procesare: Apăsați pe 'Procesare'. Odată ce procesarea este completă, vor apărea butoanele de salvare.</li><li>Salvați Fișierele: Faceți clic pentru a salva fișierele pe dispozitivul dvs.</li><li>Cheie de Securitate: Stocați cheia de criptare într-un loc sigur.</li><li>Resetare: După criptare, apăsați pe 'Resetare' pentru a șterge datele sensibile.</li><li>Avertisment de Securitate: Nu lăsați niciodată calculatorul nesupravegheat după criptare fără a apăsa pe 'Resetare'.</li><li>Decriptare: Utilizați cheia și fișierul criptat împreună în modul 'Decriptare' pentru a reveni la fișierul original.</li><li>Atenție la Cheie: Utilizarea unei chei diferite va duce la eșecul decriptării.</li><li>General:<ul><li>Toate tipurile și formatele de fișiere sunt acceptate.</li><li>'.enc' este adăugat la numele fișierelor criptate pentru identificare ușoară și eliminat din numele fișierului după decriptare.</li><li>Puteți redenumi numele fișierelor, dar vă rugăm să nu schimbați extensiile fișierelor.</li></ul></li></ul><br /><h1>Confidențialitatea Datelor Dvs.</h1>Fișierele dvs. sunt procesate local pe dispozitivul dvs. Niciun date nu este încărcat pe servere, asigurând confidențialitatea informațiilor dvs. în siguranța calculatorului dvs."
             }
         };
 

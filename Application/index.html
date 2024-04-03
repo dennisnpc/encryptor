@@ -21,7 +21,7 @@
         </div>
 
         <div id="encProcess">
-            <button class="button highlight-on-hover" id="encProcess2"><span>Process</span></button>
+            <button class="button" id="encProcess2" disabled><span>Process</span></button>
         </div>
 
         <div class="split-in-2" id="encScreen2">
@@ -39,7 +39,7 @@
         </div>
 
         <div id="decProcess">
-            <button class="button highlight-on-hover" id="decProcess2"><span>Process</span></button>
+            <button class="button" id="decProcess2" disabled><span>Process</span></button>
         </div>
 
         <div id="decScreen2">
@@ -54,7 +54,7 @@
             <button class="button highlight-on-hover highlight"><span>Restart</span></button>
         </div>
 
-        <div class="split-in-3">
+        <div class="split-in-3" id="toolbar">
             <button class="modal-help-open button-no-border" id="help" aria-label="Help"><img src="icons\light\help.png" /></button>
 
             <select class="button-no-border select-language" id="language">
@@ -79,6 +79,7 @@
             <button class="modal-close modal-help-close">&times;</button>
         </div>
         <div class="modal-content modal-help-content">
+            <h1>Please note: The application security measures are not yet fully established. It is strongly advices against using it for any serious applications that require strict security.</h1><br />
             <h1>How to Use the Application</h1>
             <ul>
                 <li>Choose Mode: Select ‘Encrypt’ or ‘Decrypt’.</li>
@@ -90,6 +91,13 @@
                 <li>Safety Reminder: Never leave your computer unattended after encryption without hitting ‘Reset’.</li>
                 <li>Decryption: Use the key and the encrypted file together in ‘Decrypt’ mode to revert to the original file.</li>
                 <li>Key Caution: Using a different key will result in decryption failure.</li>
+                <li>General:
+                    <ul>
+                        <li>All file types and formats accepted.</li>
+                        <li>‘.enc’ appended to encrypted file names for easy identification and removed from file name after decryption.</li>
+                        <li>You may rename the file names, but please do not change the file extensions.</li>
+                    </ul>
+                </li>
             </ul><br />
 
             <h1>Your Data Privacy</h1>
