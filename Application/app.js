@@ -342,7 +342,7 @@ class JSONHandler {
             // If no file selected
             else {
                 // Set text of HTML element to default
-                document.querySelector('#encGetFile span').innerText = 'Drop or select .txt';
+                document.querySelector('#encGetFile span').innerText = 'Drop or select file';
                 // Remove highlight on 'Process' button and disable it
                 disableButton('encProcess2');
             }
@@ -525,7 +525,7 @@ class JSONHandler {
             document.getElementById('decKey').value = '';
         }
         function fileSelectorButtonTextReset() {
-            document.querySelector('#encGetFile span').innerText = 'Drop or select .txt';
+            document.querySelector('#encGetFile span').innerText = 'Drop or select file';
             document.querySelector('#decGetFile span').innerText = 'Drop or select .enc';
             document.querySelector('#decGetKey span').innerText = 'Drop or select .json';
         }
@@ -814,7 +814,7 @@ class JSONHandler {
             'en-GB': {
                 'Encrypt': 'Encrypt',
                 'Decrypt': 'Decrypt',
-                'Drop or select .txt': 'Drop or select .txt',
+                'Drop or select file': 'Drop or select file',
                 'Process (to enc)': 'Process',
                 'Process(to decrypt)': 'Process',
                 'Download (encrypted) file': 'Download file',
@@ -833,7 +833,7 @@ class JSONHandler {
             'zh-CN': {
                 'Encrypt': '加密',
                 'Decrypt': '解密',
-                'Drop or select .txt': '拖放或选择 .txt',
+                'Drop or select file': '拖放或选择文件',
                 'Process (to enc)': '处理',
                 'Process(to decrypt)': '处理',
                 'Download (encrypted) file': '下载文件',
@@ -852,7 +852,7 @@ class JSONHandler {
             hi: {
                 'Encrypt': 'एन्क्रिप्ट',
                 'Decrypt': 'डिक्रिप्ट',
-                'Drop or select .txt': '.txt फ़ाइल ड्रॉप करें या चयन करें',
+                'Drop or select file': 'फ़ाइल को छोड़ें या चयनित करें',
                 'Process (to enc)': 'प्रक्रिया',
                 'Process(to decrypt)': 'प्रक्रिया',
                 'Download (encrypted) file': 'फ़ाइल डाउनलोड करें',
@@ -871,7 +871,7 @@ class JSONHandler {
             es: {
                 'Encrypt': 'Encriptar',
                 'Decrypt': 'Desencriptar',
-                'Drop or select .txt': 'Arrastra o selecciona .txt',
+                'Drop or select file': 'Arrastra o selecciona el archivo',
                 'Process (to enc)': 'Procesar',
                 'Process(to decrypt)': 'Procesar',
                 'Download (encrypted) file': 'Descargar archivo',
@@ -890,7 +890,7 @@ class JSONHandler {
             fr: {
                 'Encrypt': 'Crypter',
                 'Decrypt': 'Décrypter',
-                'Drop or select .txt': 'Déposer ou sélectionner .txt',
+                'Drop or select file': 'Déposer ou sélectionner le fichier',
                 'Process (to enc)': 'Traiter',
                 'Process(to decrypt)': 'Traiter',
                 'Download (encrypted) file': 'Télécharger le fichier',
@@ -909,7 +909,7 @@ class JSONHandler {
             ro: {
                 'Encrypt': 'Criptează',
                 'Decrypt': 'Decriptă',
-                'Drop or select .txt': 'Trage sau selectează .txt',
+                'Drop or select file': 'Trage sau selectează fișierul',
                 'Process (to enc)': 'Procesează',
                 'Process(to decrypt)': 'Procesează',
                 'Download (encrypted) file': 'Descarcă fișierul',
